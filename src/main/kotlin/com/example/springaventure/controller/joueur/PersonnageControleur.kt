@@ -1,5 +1,6 @@
 package com.example.springaventure.controller.joueur
 
+import com.example.springaventure.model.dao.ArmureDao
 import com.example.springaventure.model.dao.PersonnageDao
 import com.example.springaventure.model.dao.UtilisateurDao
 import com.example.springaventure.model.entity.Personnage
@@ -18,8 +19,9 @@ class PersonnageControleur(
     /** DAO pour l'accès aux données des personnages. */
     val personnageDao: PersonnageDao,
     /** DAO pour l'accès aux données des utilisateurs. */
-    val utilisateurDao: UtilisateurDao
-) {
+    val utilisateurDao: UtilisateurDao,
+    /** DAO pour l'accès aux données des armures. */
+    val armureDao: ArmureDao,){
 
     /**
      * Affiche la liste des personnages du joueur.
@@ -64,8 +66,14 @@ class PersonnageControleur(
      */
     @GetMapping("/joueur/personnage/create")
     fun create(model: Model): String {
-        val nouvellePersonnage = Personnage(null, "", 1, 1, 1, 1)
+        val nouvellePersonnage = Personnage(null, "", 1, 1, 1, 1,null,null)
+        // Récupère les valeurs d'Armure
+        val lesArmures = armureDao.findAll()
+
         model.addAttribute("nouvellePersonnage", nouvellePersonnage)
+        // Ajoute les valeurs de Armure au nouveau personnage
+        model.addAttribute("armures",lesArmures)
+
         return "joueur/personnage/create"
     }
 
@@ -103,7 +111,12 @@ class PersonnageControleur(
     @GetMapping("/joueur/personnage/{id}/edit")
     fun edit(@PathVariable id: Long, model: Model): String {
         val personnage = this.personnageDao.findById(id).orElseThrow()
+        // Récupère les valeurs d'Armure
+        val lesArmures = armureDao.findAll()
+
         model.addAttribute("personnage", personnage)
+        // Ajoute les valeurs de Armure au nouveau personnage
+        model.addAttribute("armures",lesArmures)
         return "joueur/personnage/edit"
     }
 
@@ -132,6 +145,7 @@ class PersonnageControleur(
         personnageModifier.defense = personnage.defense
         personnageModifier.endurance = personnage.endurance
         personnageModifier.vitesse = personnage.vitesse
+        personnageModifier.armureEquipee = personnage.armureEquipee
         personnageModifier.utilisateur = utilisateur
         val savedPersonnage = this.personnageDao.save(personnageModifier)
         redirectAttributes.addFlashAttribute("msgSuccess", "Modification de ${savedPersonnage.nom} réussie")

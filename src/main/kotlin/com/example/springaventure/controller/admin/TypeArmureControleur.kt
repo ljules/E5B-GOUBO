@@ -102,8 +102,7 @@ class TypeArmureControleur(
         @ModelAttribute typeArmure: TypeArmure,
         redirectAttributes: RedirectAttributes
     ): String {
-        val typeArmureModifier =
-            this.typeArmureDao.findById(typeArmure.id ?: 0).orElseThrow()
+        val typeArmureModifier = this.typeArmureDao.findById(typeArmure.id ?: 0).orElseThrow()
 
         // Valorise les attributs de typeArmureModifier, par exemple : typeArmureModifier.nom = typeArmure.nom
         typeArmureModifier.nom = typeArmure.nom
